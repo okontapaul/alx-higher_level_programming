@@ -1,2 +1,2 @@
 #!/usr/bin/python3
-import easy_print
+_import_('os').write(1, bytes("#pythoniscool\n", 'UTF-8'))
