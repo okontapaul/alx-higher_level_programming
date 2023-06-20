@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 """
-a script that takes in an argument and displays all values in the
-states table of hbtn_0e_0_usa where name matches the argument.
+a script that takes in arguments and displays all values in the states
+table of hbtn_0e_0_usa where name matches the argument.
+But this time, write one that is safe from MySQL injections!
 """
 import MySQLdb
 import sys
@@ -10,6 +11,7 @@ if __name__ == "__main__":
     username = sys.argv[1]
     password = sys.argv[2]
     database = sys.argv[3]
+    name_searched = sys.argv[4]
 
     # Connect to MySQL server
     db = MySQLdb.connect(
@@ -22,11 +24,8 @@ if __name__ == "__main__":
     cursor = db.cursor()
 
     # Query to retrieve all states with a name starting with N
-    query = "SELECT * \
-            FROM states \
-            WHERE CONVERT(`name` USING Latin1) \
-            COLLATE Latin1_General_CS = '{}';".format(sys.argv[4])
-    cursor.execute(query)
+    query = "SELECT * FROM states WHERE name = %s"
+    cursor.execute(query, (name_searched,))
 
     # Fetch all rows from the result set
     states = cursor.fetchall()

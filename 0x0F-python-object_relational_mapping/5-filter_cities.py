@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """
-a script that takes in an argument and displays all values in the
-states table of hbtn_0e_0_usa where name matches the argument.
+a script that takes in the name of a state as an argument and
+lists all cities of that state, using the database hbtn_0e_4_usa
 """
 import MySQLdb
 import sys
@@ -10,6 +10,7 @@ if __name__ == "__main__":
     username = sys.argv[1]
     password = sys.argv[2]
     database = sys.argv[3]
+    name_searched = sys.argv[4]
 
     # Connect to MySQL server
     db = MySQLdb.connect(
@@ -22,15 +23,13 @@ if __name__ == "__main__":
     cursor = db.cursor()
 
     # Query to retrieve all states with a name starting with N
-    query = "SELECT * \
-            FROM states \
-            WHERE CONVERT(`name` USING Latin1) \
-            COLLATE Latin1_General_CS = '{}';".format(sys.argv[4])
-    cursor.execute(query)
+    query = "SELECT cities.id, cities.name, states.name \
+            FROM cities JOIN states ON cities.state_id = states.id \
+            WHERE states.name = %s;"
+    cursor.execute(query, (name_searched,))
 
     # Fetch all rows from the result set
     states = cursor.fetchall()
 
     # Display the results
-    for state in states:
-        print(state)
+    print(", ".join([state[1] for state in states]))
